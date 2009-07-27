@@ -1,0 +1,69 @@
+%\VignetteIndexEntry{optparse Command Line Option Parsing}
+\documentclass[a4paper]{article}
+\usepackage{listings}
+\title{optparse Command Line Option Parsing}
+\begin{document}
+\maketitle
+\setlength{\hoffset}{-0.5in}
+optparse is a command line option parser inspired by Python's "optparse" library.  Use this with Rscript to write "\#!"-shebang scripts that accept short and long flags/options, generate a usage statement, and set default values for options that are not specified on the command line.
+\newpage
+Here is an example R script illustrating the use of the optparse package.
+\lstinputlisting[language=R]{example.Rscript}
+\newpage
+<<echo=FALSE>>=
+#cat(readLines(file.path("Rscripts", "example.R")), sep="\n")
+#command <- "cd ../Rscripts" # 
+#system(command)
+#setwd("../Rscripts")
+@
+
+To avoid having to worry about correctly specifying our \verb|"#!"|-shebang line and making our program executable we will change to the directory of our example program and use \verb|Rscript| directly.
+\newline\newline
+%\noindent\verb|\Sexpr{#paste("bash$", command)}|
+\newline
+<<echo=FALSE>>=
+command <- "Rscript example.Rscript --help" # same as system("Rscript example.Rscript -h")
+@
+
+By default \emph{optparse} will generate a help message if it encounters \verb|--help| or \verb|-h| on the command line.  Note how \verb|%default| in the example program was replaced by the actual default values in the help statement that \emph{optparse} generated.  
+\newline\newline
+\noindent\verb|\Sexpr{paste("bash$", command)}|
+<<echo=FALSE>>=
+cat(system(sprintf("%s 2>&1", command),  intern=TRUE), sep="\n")   
+command <- "Rscript example.Rscript" # rely only on defaults
+@
+
+If you specify default values when creating your \verb|OptionParser| then \emph{optparse} will use them as expected.
+\newline\newline
+\noindent\verb|\Sexpr{paste("bash$", command)}|
+<<echo=FALSE>>=
+cat(system(sprintf("%s 2>&1", command),  intern=TRUE), sep="\n")   
+command <- "Rscript example.Rscript --mean=10 --sd=10 --count=3" 
+@
+
+\begin{samepage}
+Or you can specify your own values.
+\newline\newline
+\noindent\verb|\Sexpr{paste("bash$", command)}|
+<<echo=FALSE>>=
+cat(system(sprintf("%s 2>&1", command),  intern=TRUE), sep="\n")   
+command <- "Rscript example.Rscript --quiet -c 4 --generator=\"runif\"" #  same as above but "quiet"
+@
+\end{samepage}
+
+If you remember from the example program that \verb|--quiet| had \verb|action="store_false"| and 
+\verb|dest="verbose"|.  This means that \verb|--quiet| is a switch that turns the \verb|verbose| option from its default value of \verb|TRUE| to \verb|FALSE|.  Note how the \verb|verbose| and \verb|quiet| options store their value in the exact same variable.
+\newline\newline
+\noindent\verb|\Sexpr{paste("bash$", command)}|
+<<echo=FALSE>>=
+cat(system(sprintf("%s 2>&1", command),  intern=TRUE), sep="\n")   
+command <- "Rscript example.Rscript --silent -m 5" #  same as above but "quiet"
+@
+
+If you specify an illegal flag then \emph{getopt}, the package \emph{optparse} uses to do the actual command line parsing, will throw an error.  \emph{getopt} will also throw an error if you specify two options that use identical flags.
+\newline\newline
+\noindent\verb|\Sexpr{paste("bash$", command)}|
+<<echo=FALSE>>=
+cat(system(sprintf("%s 2>&1", command),  intern=TRUE), sep="\n")   
+@
+\end{document}
