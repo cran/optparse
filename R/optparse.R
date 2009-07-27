@@ -81,15 +81,6 @@ setClass("OptionParserOption", representation(short_flag="character",
                                     help="character",
                                     metavar="character"),)
 
-# if (!isGeneric(".convert_to_getopt")) {
-#     if (is.function(".convert_to_getopt"))
-#         fun <- .convert_to_getopt
-#     else fun <- function(object) standardGeneric(".convert_to_getopt")
-#     setGeneric(".convert_to_getopt", fun)
-# }
-# 
-# 
-# setMethod(".convert_to_getopt", "OptionParserOption", function(object) {
 .convert_to_getopt <- function(object) {
     short_flag <- sub("^-", "", object@short_flag)
     long_flag <- sub("^--", "", object@long_flag)
@@ -100,44 +91,25 @@ setClass("OptionParserOption", representation(short_flag="character",
     }
     return( c( long_flag, short_flag, argument, object@type, object@help) )
 }
-#)
-
-# if (!isGeneric("add_option")) {
-#     if(is.function("add_option"))
-#         fun <- add_option
-#     else fun <- function(object, ...) standardGeneric("add_option")
-#     setGeneric("add_option", fun)
-# }
-# 
-# setMethod("add_option", "OptionParser", 
 add_option <- function(object, opt_str, action="store", type=NULL, 
                     dest=NULL, default=NULL, help="", metavar=NULL) {
-    options <- object@options
-    n_original_options <- length(options)
-    options[[n_original_options + 1]] <- make_option(opt_str=opt_str,
+    options_list <- object@options
+    n_original_options <- length(options_list)
+    options_list[[n_original_options + 1]] <- make_option(opt_str=opt_str,
                                            action=action, type=type, dest=dest,
                                            default=default, help=help, metavar=metavar)        
-    object@options <- options
+    object@options <- options_list
     return(object)
 }
-#)
 
-# if (!isGeneric("print_help")) {
-#     if(is.function("print_help"))
-#         fun <- print_help
-#     else fun <- function(object) standardGeneric("print_help")
-#     setGeneric("print_help", fun)
-# }
-# 
-# setMethod("print_help", "OptionParser", 
 print_help <- function(object) {
     cat(object@usage, fill=TRUE)
     cat("\n")
     cat("options:", sep="\n")    
 
-    options <- object@options
-    for(ii in seq(along=options)) {
-        option <- options[[ii]]
+    options_list <- object@options
+    for(ii in seq(along=options_list)) {
+        option <- options_list[[ii]]
         cat("\t")
         if(!is.na(option@short_flag)) {
             cat(option@short_flag)
@@ -160,49 +132,83 @@ print_help <- function(object) {
     }
     return(invisible(NULL))
 }
-#)
 
-# if (!isGeneric("parse_args")) {
-#     if (is.function("parse_args")) {
-#         fun <- parse_args
-#     } else {
-#         fun <- function(object, args, ...) standardGeneric("parse_args")
-#     }
-#     setGeneric("parse_args", fun)
-# }
-# 
-# 
-# setMethod("parse_args", "OptionParser", function(object, args = commandArgs(TRUE), print_help_and_exit = TRUE) {
-parse_args <- function(object, args = commandArgs(TRUE), print_help_and_exit = TRUE) {
+parse_args <- function(object, args = commandArgs(trailingOnly = TRUE), 
+                    print_help_and_exit = TRUE, positional_arguments = FALSE) {
     n_options <- length( object@options )
     spec <- matrix(NA, nrow = n_options, ncol = 5)
     for (ii in seq(along = object@options)) {
         spec[ii, ] <- .convert_to_getopt( object@options[[ii]] )
     }
-    opt <- .getopt(spec=spec, opt=args)
 
-    options <- list()
+    if(positional_arguments) {
+        os_and_n_arg <- .get_option_strings_and_n_arguments(object)
+        suppressWarnings(
+            last_option_index <- max(which(args %in% os_and_n_arg$option_strings))
+        )
+        if(last_option_index == -Inf) {
+            n_option_arguments <- 0
+        } else {
+            last_option <- args[last_option_index]
+            n_arg <- os_and_n_arg$n_arguments[which(os_and_n_arg$option_strings == last_option)]
+            n_option_arguments <- last_option_index + n_arg
+        }
+        if(length(args) > n_option_arguments) {
+            arguments_positional <- args[(n_option_arguments + 1):length(args)]
+            if(n_option_arguments) {
+                args <- args[1:n_option_arguments]
+            } else {
+                args <- NULL
+            }
+        } else {
+            arguments_positional <- character(0)
+        }
+    }
+    options_list <- list()
+    if(length(args)) {
+        opt <- getopt(spec=spec, opt=args)
+    } else {
+        opt <- list()
+    }
+
     for (ii in seq(along = object@options)) {
         option <- object@options[[ii]]
         option_value <- opt[[sub("^--", "", option@long_flag)]] 
         if( !is.null(option_value) ) {
             if ( option@action == "store_false" ) {
-                options[[option@dest]] <- FALSE
+                options_list[[option@dest]] <- FALSE
             } else {    
-                options[[option@dest]] <- option_value
+                options_list[[option@dest]] <- option_value
             }
         } else {
-            if( !is.null(option@default) & is.null(options[[option@dest]]) ) {
-                options[[option@dest]] <- option@default  
+            if( !is.null(option@default) & is.null(options_list[[option@dest]]) ) {
+                options_list[[option@dest]] <- option@default  
             }
         }
     }
-    if(options[["help"]] & print_help_and_exit) {
+    if(options_list[["help"]] & print_help_and_exit) {
         print_help(object)
         quit(status=1)
     }
-        
-    return(options)
+    if(positional_arguments) {
+        return(list(options = options_list, args = arguments_positional))
+    } else {    
+        return(options_list)
+    }
 }
-#)
 
+.get_option_strings_and_n_arguments <- function(object) {
+    option_strings <- vector("character")
+    n_arguments <- vector("numeric")
+    for (ii in seq(along = object@options)) {
+        option <- object@options[[ii]]
+        option_strings <- c(option_strings, option@short_flag)
+        option_strings <- c(option_strings, option@long_flag)
+        if (option@action == "store") {
+            n_arguments <- c(n_arguments, 1, 1)
+        } else {
+            n_arguments <- c(n_arguments, 0, 0)
+        }
+    }
+    return(list(option_strings = option_strings, n_arguments = n_arguments))
+}
