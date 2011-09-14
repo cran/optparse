@@ -1,5 +1,6 @@
 \name{parse_args}
 \Rdversion{1.1}
+\encoding{UTF-8}
 \alias{parse_args}
 \title{
     Parse command line options.
@@ -33,7 +34,7 @@ parse_args(object, args = commandArgs(trailingOnly = TRUE),
     is described here:  \url{http://docs.python.org/library/optparse.html} 
 }
 \section{Acknowledgement}{
-    A big thanks to Steve Lianoglou for a bug report and patch.
+    A big thanks to Steve Lianoglou for a bug report and patch, Juan Carlos Borrás for a bug report, Jim Nikelski for a bug report and patch.
 }
 \author{ 
     Trevor Davis. 
@@ -65,6 +66,7 @@ option_list <- list(
         help="Standard deviation if generator == \"rnorm\" [default \%default]")
     )
 parse_args(OptionParser(option_list = option_list), args = c("--sd=3", "--quietly"))
+
 # example from vignette using positional arguments
 option_list2 <- list( 
     make_option(c("-n", "--add_numbers"), action="store_true", default=FALSE,
@@ -75,43 +77,4 @@ parser <- OptionParser(usage = "\%prog [options] file", option_list=option_list2
 parse_args(parser, args = c("--add_numbers", "example.txt"), positional_arguments = TRUE)
 
 parse_args(parser, args = c("-add_numbers", "example.txt"), positional_arguments = TRUE)
-\testonly{
-    if (require("RUnit")) {
-        sort_list <- function(unsorted_list) { 
-            for(ii in seq(along=unsorted_list)) {
-                if(is.list(unsorted_list[[ii]])) {
-                    unsorted_list[[ii]] <- unsorted_list[[ii]][sort(names(unsorted_list[[ii]]))]
-                }
-            }
-            unsorted_list[sort(names(unsorted_list))] 
-        }
-        checkEquals(sort_list(parse_args(OptionParser(option_list = option_list), 
-                                args = c("--sd=3", "--quietly"))),
-                    sort_list(list(sd = 3, verbose = FALSE, help = FALSE, 
-                        count = 5, mean = 0, generator = "rnorm")))
-        checkEquals(sort_list(parse_args(OptionParser(option_list = option_list), 
-                            args = character(0), positional_arguments = TRUE)),
-                    sort_list(list(options = list(sd = 1, help = FALSE, verbose = TRUE, 
-                                    count = 5, mean = 0, generator = "rnorm"),
-                                args = character(0))))
-        checkEquals(sort_list(parse_args(OptionParser(option_list = option_list), 
-                                args = c("-c", "10"))),
-                    sort_list(list(sd = 1, help = FALSE, verbose = TRUE, 
-                                count = 10, mean = 0, generator = "rnorm")))
-        checkEquals(sort_list(parse_args(parser, args = c("--add_numbers", "example.txt"), 
-                                positional_arguments = TRUE)),
-                    sort_list(list(options = list(add_numbers = TRUE, help = FALSE), 
-                                 args = c("example.txt"))))
-        checkEquals(sort_list(parse_args(parser, args = c("--add_numbers"), 
-                                positional_arguments = TRUE)),
-                    sort_list(list(options = list(add_numbers = TRUE, help = FALSE), 
-                                 args = character(0))))
-        checkEquals(sort_list(parse_args(parser, args = c("-add_numbers", "example.txt"), 
-                                    positional_arguments = TRUE)),
-                    sort_list(list(options = list(add_numbers = FALSE, help = FALSE), 
-                                 args = c("-add_numbers", "example.txt"))))
-#       checkException(parse_args(parser, args = c("--add_numbers", "example.txt")))
-        checkException(parse_args(parser, args = c("-add_numbers", "example.txt")))
-    }
-}
 }

@@ -1,0 +1,17 @@
+201de594f5ce13ddf5c8ab2ab3813185 *DESCRIPTION
+296008eceef44b8cc1e35bdb10039d32 *LICENSE
+f3e3db1b3335278f4afa635e8b6b88c7 *NAMESPACE
+bd8b54c421bb935c5b4b63d05925634f *R/optparse.R
+ecad5842c07b9a5cceb9c5155e88254a *inst/doc/display_file.Rscript
+ac9fc373dd8fc8b4959a6b1d5b48005d *inst/doc/example.Rscript
+7a67767a2188a1b149a293f96239b573 *inst/doc/optparse.Rnw
+2dc23d6a2d7086c2197b9eb4c1457fcf *inst/doc/optparse.pdf
+cd02c34021c87dbc31f7df635250fdd1 *man/OptionParser-class.Rd
+4a33fc1195365763817e33ada15120be *man/OptionParser.Rd
+e3e5103c1a6524aa434a9319614f7e29 *man/OptionParserOption-class.Rd
+cc454f267e909e44a278f8dc4a267efc *man/add_make_option.Rd
+1ae9351656e99010451156c9f8d8a7f6 *man/optparse-internal.Rd
+6c9b2c52e26694827312d4a1717bd35f *man/optparse-package.Rd
+4b4e48efd3b6fb2da4aa0821cccbbacc *man/parse_args.Rd
+e84bbf96a1568ea92ade808ef1490962 *man/print_help.Rd
+7487f0da8d058a52d39bab2eb44c3a32 *tests/unit_tests.R
