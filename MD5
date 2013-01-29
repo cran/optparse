@@ -1,4 +1,4 @@
-5c0a2366d8aecc38bfcc068412c84fd6 *DESCRIPTION
+cd8482abe206da3b32300163aec0fd3e *DESCRIPTION
 b531b5f174d2b1ca84d11682305c25f7 *LICENSE
 8f47d5f3df9541f1a5b4b2df3285f9fc *NAMESPACE
 fd03f7f3f442e6c814364630ca3f17a9 *NEWS
@@ -7,7 +7,7 @@ fd03f7f3f442e6c814364630ca3f17a9 *NEWS
 ecad5842c07b9a5cceb9c5155e88254a *exec/display_file.R
 ac9fc373dd8fc8b4959a6b1d5b48005d *exec/example.R
 d762f5d2c38dbe6465997cb9b6882b24 *inst/doc/optparse.Rnw
-7d853f473498e3d17927ccd6d330e0ce *inst/doc/optparse.pdf
+04683a1d5d5d6b116213de63c5937d80 *inst/doc/optparse.pdf
 40e6cb91ba929bcd5c05993788204f4b *inst/tests/test-optparse.R
 96692e8aee19e68ab0ee6f7b42494641 *man/OptionParser.Rd
 551daa7b79f544ce03b7e05221276bae *man/add_make_option.Rd
