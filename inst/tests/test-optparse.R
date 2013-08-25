@@ -1,3 +1,17 @@
+# Copyright (c) 2010-2013 Trevor L Davis <trevor.l.davis@stanford.edu>
+#  
+#  This file is free software: you may copy, redistribute and/or modify it  
+#  under the terms of the GNU General Public License as published by the  
+#  Free Software Foundation, either version 2 of the License, or (at your  
+#  option) any later version.  
+#  
+#  This file is distributed in the hope that it will be useful, but  
+#  WITHOUT ANY WARRANTY; without even the implied warranty of  
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+#  General Public License for more details.  
+#  
+#  You should have received a copy of the GNU General Public License  
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
 option_list <- list( 
     make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
         help="Print extra output [default]"),
@@ -128,6 +142,15 @@ test_that("test bug when long flag option with '=' with positional_arguments = T
                             args=character(0))))
 })
 
+# Bug found by Miroslav Posta
+optlist = list(make_option(c("--tmin"), type="numeric", help="Startup time [sec]. "))
+parser = OptionParser(option_list=optlist, usage="", epilogue="")
+test_that("test bug with a NA short flag option with positional_arguments = TRUE", {
+    expect_equal(sort_list(parse_args(args=c("-h", "foo"), parser, positional_arguments=TRUE, 
+                                      print_help_and_exit=FALSE)),
+                sort_list(list(options = list(help=TRUE), args="foo")))
+})
+
 context("print_help")
 test_that("description and epilogue work as expected", {
     parser <- OptionParser()
@@ -140,4 +163,11 @@ test_that("description and epilogue work as expected", {
     expect_equal(stringr::str_count(
                 capture.output(print_help(OptionParser("usage: foo bar")))[1],
                 "[Uu]sage"), 1)
+
+    # bug / feature request by Miroslav Posta
+    parser = OptionParser(usage="test %prog test %prog", epilog="epilog test %prog %prog", 
+                description="description %prog test %prog", prog="unit_test.r")
+    expect_output(print_help(parser), 'Usage:.*unit_test.r.*unit_test.r')
+    expect_output(print_help(parser), 'description unit_test.r test unit_test.r')
+    expect_output(print_help(parser), 'epilog test unit_test.r unit_test.r')
 })
