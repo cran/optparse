@@ -1,4 +1,6 @@
-# Copyright (c) 2010-2013 Trevor L Davis <trevor.l.davis@stanford.edu>
+# Copyright 2010-2013 Trevor L Davis <trevor.l.davis@stanford.edu>
+# Copyright 2013 Kirill Müller
+# Copyright 2008 Allen Day
 #  
 #  This file is free software: you may copy, redistribute and/or modify it  
 #  under the terms of the GNU General Public License as published by the  
@@ -27,14 +29,6 @@ option_list <- list(
     make_option("--sd", default=1, metavar="standard deviation",
         help="Standard deviation if generator == \"rnorm\" [default \\%default]")
     )
-sort_list <- function(unsorted_list) {
-    for(ii in seq(along=unsorted_list)) {
-        if(is.list(unsorted_list[[ii]])) {
-            unsorted_list[[ii]] <- sort_list(unsorted_list[[ii]])
-        }
-    }
-    unsorted_list[sort(names(unsorted_list))] 
-}
 
 context("Testing make_option")
 test_that("make_option works as expected", {
@@ -79,7 +73,40 @@ test_that("parse_args works as expected", {
                 sort_list(list(options = list(add_numbers = FALSE, help = FALSE), 
                              args = c("-add_numbers", "example.txt"))))
     expect_that(parse_args(parser, args = c("-add_numbers", "example.txt")), throws_error())
+    expect_equal(sort_list(parse_args(parser, args = c("-add_numbers", "example.txt"),
+                                      positional_arguments = c(1,3))),
+                 sort_list(list(options = list(add_numbers = FALSE, help = FALSE),
+                                args = c("-add_numbers", "example.txt"))))
+    expect_equal(sort_list(parse_args(parser, args = c("--add_numbers", "example.txt"),
+                                      positional_arguments = c(1,3))),
+                 sort_list(list(options = list(add_numbers = TRUE, help = FALSE),
+                                args = c("example.txt"))))
+    expect_equal(sort_list(parse_args(parser, args = c("example.txt"),
+                                      positional_arguments = 1)),
+                 sort_list(list(options = list(add_numbers = FALSE, help = FALSE),
+                                args = c("example.txt"))))
+    expect_that(parse_args(parser, args = c("-add_numbers", "example.txt"),
+                           positional_arguments=c(0, 1)), throws_error())
+    expect_that(parse_args(parser, args = c("example.txt"),
+                           positional_arguments=c(2, Inf)), throws_error())
+    expect_that(parse_args(parser, args = c("example.txt"),
+                           positional_arguments=2), throws_error())
+    expect_that(parse_args(parser, args = c("example.txt"),
+                           positional_arguments="any"), throws_error("must be logical or numeric"))
+    expect_that(parse_args(parser, args = c("example.txt"),
+                           positional_arguments=1:3), throws_error("must have length 1 or 2"))
+    if(interactive()) {
+        expect_that(capture.output(parse_args(parser, args = c("--help"))), throws_error("help requested"))
+        expect_that(capture.output(parse_args(parser, args = c("--help"), positional_arguments=c(1, 2))), throws_error("help requested"))
+    }
 })
+# Bug found by Miroslav Posta
+test_that("test using numeric instead of double", {
+option_list_neg <- list( make_option(c("-m", "--mean"), default=0, type="numeric") )
+    parser <- OptionParser(usage = "\\%prog [options] file", option_list=option_list_neg)
+    parse_args(parser, args = c("-m", "-5.0")) 
+})
+
 
 # Bug found by Juan Carlos Borrás
 test_that("test bug of multiple '=' signs", {
@@ -163,6 +190,24 @@ test_that("description and epilogue work as expected", {
     expect_equal(stringr::str_count(
                 capture.output(print_help(OptionParser("usage: foo bar")))[1],
                 "[Uu]sage"), 1)
+
+    # bug found by Stefan Seemayer for NA default
+    optlist <- list(
+        make_option(c("--na"), type="character", default=NA, help="NA default is %default"),
+        make_option(c("--null"), type="character", default=NULL, help="NULL default is %default"),
+        make_option(c("--str"), type="character", default="str", help="str default is %default"),
+        make_option(c("--bool"), type="logical", default=TRUE, help="bool default is %default"),
+        make_option(c("--int"), type="integer", default=42, help="int default is %default"),
+        make_option(c("--int"), type="double", default=11.11, help="double default is %default")
+    )
+    parser <- OptionParser(option_list=optlist)
+    expect_output(print_help(parser), "NA default is NA")
+    expect_output(print_help(parser), "NULL default is NULL")
+    expect_output(print_help(parser), "str default is str")
+    expect_output(print_help(parser), "bool default is TRUE")
+    expect_output(print_help(parser), "int default is 42")
+    expect_output(print_help(parser), "double default is 11.11")
+
 
     # bug / feature request by Miroslav Posta
     parser = OptionParser(usage="test %prog test %prog", epilog="epilog test %prog %prog", 
