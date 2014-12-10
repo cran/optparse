@@ -2,11 +2,11 @@ Encoding: UTF-8
 Package: optparse
 Type: Package
 Title: Command line option parser.
-Version: 1.2.0
+Version: 1.3.0
 Author: Trevor L Davis. Some documentation and examples ported from Allen Day's
     getopt package. Some documentation from the optparse Python module by the
     Python Software Foundation. Contributions from Steve Lianoglou, Jim
-    Nikelski, and Kirill Müller.
+    Nikelski, Kirill Müller, and Peter Humburg.
 Maintainer: Trevor L Davis <trevor.l.davis@stanford.edu>
 Description: A command line parser inspired by Python's 'optparse' library to
     be used with Rscript to write "#!" shebang scripts that accept short and
@@ -20,8 +20,7 @@ Depends: R (>= 2.9.0)
 Imports: methods, getopt (>= 1.19)
 Suggests: knitr, stringr, testthat
 VignetteBuilder: knitr
-Collate: 'optparse-package.R' 'optparse.R'
-Packaged: 2014-04-04 06:20:29 UTC; trevorld
+Packaged: 2014-12-10 23:10:02 UTC; trevorld
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2014-04-04 09:29:52
+Date/Publication: 2014-12-11 08:02:20
