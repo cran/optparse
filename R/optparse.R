@@ -29,7 +29,7 @@
 
 #' Option Parser
 #' 
-#'  @slot usage The program usage message that will printed out if
+#' @slot usage The program usage message that will printed out if
 #'     \code{parse_args} finds a help option, \code{\%prog} is substituted with the
 #'     value of the \code{prog} argument.
 #' @slot options A list of of \code{OptionParserOption} instances that will
@@ -72,8 +72,7 @@ setClass("OptionParser", representation(usage = "character", options = "list",
 #'     by \code{parse_args} should \code{optparse} store option values.  Default is
 #'     derived from the long flag in \code{opt_str}.
 #' @slot default The default value \code{optparse} should use if it does not
-#'     find the option on the command line.  Default is derived from the long flag
-#'     in \code{opt_str}.
+#'     find the option on the command line.  
 #' @slot help A character string describing the option to be used by
 #'     \code{print_help} in generating a usage message.  \code{\%default} will be
 #'     substituted by the value of \code{default}.
@@ -183,8 +182,7 @@ OptionParser <- function(usage = "usage: %prog [options]", option_list=list(),
 #'     by \code{parse_args} should \code{optparse} store option values.  Default is
 #'     derived from the long flag in \code{opt_str}.
 #' @param default The default value \code{optparse} should use if it does not
-#'     find the option on the command line.  Default is derived from the long flag
-#'     in \code{opt_str}.
+#'     find the option on the command line.  
 #' @param help A character string describing the option to be used by
 #'     \code{print_help} in generating a usage message.  \code{\%default} will be
 #'     substituted by the value of \code{default}.
@@ -338,7 +336,9 @@ print_help <- function(object) {
 #' Parse command line options.
 #' 
 #' \code{parse_args} parses command line options using an \code{OptionParser}
-#' instance for guidance.
+#' instance for guidance. \code{parse_args2} is a wrapper to \code{parse_args}
+#' setting the options \code{positional_arguments} and \code{convert_hyphens_to_underscores}
+#' to \code{TRUE}.
 #' 
 #' @param object An \code{OptionParser} instance.
 #' @param args A character vector containing command line options to be parsed.
@@ -355,6 +355,9 @@ print_help <- function(object) {
 #'     \code{c(0, Inf)}.  The default \code{FALSE} is
 #'     supported for backward compatibility only, as it alters
 #'     the format of the return value.
+#' @param convert_hyphens_to_underscores If the names in the returned list of options
+#'      contains hyphens then convert them to underscores.  The default \code{FALSE} is 
+#'      supported for backward compatibility reasons as it alters the format of the return value
 #' @return Returns a list with field \code{options} containing our option values
 #'     as well as another field \code{args} which contains a vector of
 #'     positional arguments.  For backward compatibility, if and only if
@@ -395,20 +398,24 @@ print_help <- function(object) {
 #'
 #'# example from vignette using positional arguments
 #'option_list2 <- list( 
-#'    make_option(c("-n", "--add_numbers"), action="store_true", default=FALSE,
+#'    make_option(c("-n", "--add-numbers"), action="store_true", default=FALSE,
 #'        help="Print line number at the beginning of each line [default]")
 #'    )
 #'parser <- OptionParser(usage = "%prog [options] file", option_list=option_list2)
 #'
-#'parse_args(parser, args = c("--add_numbers", "example.txt"), positional_arguments = TRUE)
+#'parse_args(parser, args = c("--add-numbers", "example.txt"), positional_arguments = TRUE)
 #'
-#'parse_args(parser, args = c("-add_numbers", "example.txt"), positional_arguments = TRUE)
+#'parse_args(parser, args = c("--add-numbers", "example.txt"), positional_arguments = TRUE,
+#'          convert_hyphens_to_underscores = TRUE)
+#'
+#'parse_args2(parser, args = c("--add-numbers", "example.txt"))
 #'
 #' @import getopt
 #' @importFrom utils tail
 #' @export 
 parse_args <- function(object, args = commandArgs(trailingOnly = TRUE), 
-                    print_help_and_exit = TRUE, positional_arguments = FALSE) {
+                    print_help_and_exit = TRUE, positional_arguments = FALSE,
+                    convert_hyphens_to_underscores = FALSE) {
 
     n_options <- length( object@options )
 
@@ -479,9 +486,14 @@ parse_args <- function(object, args = commandArgs(trailingOnly = TRUE),
             }
         }
     }
-    if(options_list[["help"]] & print_help_and_exit) {
-        print_help(object)
-        if(interactive()) stop("help requested") else quit(status=1) 
+    if (convert_hyphens_to_underscores) {
+        names(options_list) <- gsub("-", "_", names(options_list))
+    }
+    if (any(grepl("^help$", names(options_list)))) {
+        if(options_list[["help"]] & print_help_and_exit) {
+            print_help(object)
+            if(interactive()) stop("help requested") else quit(status=1) 
+        }
     }
     if (length(arguments_positional) < min(positional_arguments)) {
       stop(sprintf("required at least %g positional arguments, got %g",
@@ -496,6 +508,13 @@ parse_args <- function(object, args = commandArgs(trailingOnly = TRUE),
     } else {    
         return(options_list)
     }
+}
+#' @rdname parse_args
+#' @export
+parse_args2 <- function(object, args = commandArgs(trailingOnly = TRUE),
+                        print_help_and_exit = TRUE) {
+    parse_args(object, args = args, print_help_and_exit = print_help_and_exit,
+               positional_arguments = TRUE, convert_hyphens_to_underscores = TRUE)
 }
 
 # Tells me whether a string is a valid option
@@ -591,3 +610,4 @@ parse_args <- function(object, args = commandArgs(trailingOnly = TRUE),
     }
     return( c( long_flag, short_flag, argument, object@type, object@help) )
 }
+
