@@ -1,4 +1,4 @@
-# Copyright 2010-2015 Trevor L Davis <trevor.l.davis@stanford.edu>
+# Copyright 2010-2017 Trevor L Davis <trevor.l.davis@gmail.com>
 # Copyright 2013 Kirill Müller
 # Copyright 2008 Allen Day
 #  
@@ -15,7 +15,6 @@
 #  You should have received a copy of the GNU General Public License  
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
 
-
 option_list <- list( 
     make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
         help="Print extra output [default]"),
@@ -29,8 +28,9 @@ option_list <- list(
     make_option("--mean", default=0, 
         help="Mean if generator == \"rnorm\" [default \\%default]"),
     make_option("--sd", default=1, metavar="standard deviation",
-        help="Standard deviation if generator == \"rnorm\" [default \\%default]")
+        help="Standard deviation if generator == \"rnorm\" [default \\%default]") 
     )
+
 
 context("Testing make_option")
 test_that("make_option works as expected", {
@@ -60,7 +60,7 @@ test_that("parse_args works as expected", {
     option_list2 <- list( 
         make_option(c("-n", "--add-numbers"), action="store_true", default=FALSE,
             help="Print line number at the beginning of each line [default]")
-        )
+    )
     parser <- OptionParser(usage = "\\%prog [options] file", option_list=option_list2)
     expect_equal(sort_list(parse_args(OptionParser(option_list = option_list), 
                             args = c("--sd=3", "--quietly"))),
@@ -94,7 +94,7 @@ test_that("parse_args works as expected", {
                                 positional_arguments = TRUE)),
                 sort_list(list(options = list(`add-numbers` = FALSE, help = FALSE), 
                              args = c("-add-numbers", "example.txt"))))
-    expect_that(parse_args(parser, args = c("-add-numbers", "example.txt")), throws_error())
+    expect_error(parse_args(parser, args = c("-add-numbers", "example.txt")))
     expect_equal(sort_list(parse_args(parser, args = c("-add-numbers", "example.txt"),
                                       positional_arguments = c(1,3))),
                  sort_list(list(options = list(`add-numbers` = FALSE, help = FALSE),
@@ -117,18 +117,50 @@ test_that("parse_args works as expected", {
                            positional_arguments="any"), throws_error("must be logical or numeric"))
     expect_that(parse_args(parser, args = c("example.txt"),
                            positional_arguments=1:3), throws_error("must have length 1 or 2"))
+    
     if(interactive()) {
         expect_that(capture.output(parse_args(parser, args = c("--help"))), throws_error("help requested"))
         expect_that(capture.output(parse_args(parser, args = c("--help"), positional_arguments=c(1, 2))), throws_error("help requested"))
     }
+
 })
+
+# Patch from Gyu Jin Choi.
+test_that("callback works as expected", {
+    power <- function(x, n=2) { x^n }
+    callback_fn <- function (option, flag, option_value, parser, n=2) {
+        power(option_value, n)
+    } 
+
+    parser0 <- OptionParser()
+    parser1 <- add_option(parser0, c("-s", "--squared_distance"), type="integer",
+                         action="callback", help="Squared distance between two points", callback=callback_fn, callback_args=list(2))
+    opts <- parse_args(parser1, args = c("--squared_distance=16"))
+    expect_equal(opts$squared_distance, 256)
+
+    parser2 <- add_option(parser0, c("-v", "--value"), type="integer",
+                         action="callback", callback=callback_fn, callback_args=list(n=3))
+    opts <- parse_args(parser2, args = c("--value=2"))
+    expect_equal(opts$value, 8)
+
+    parser3 <- add_option(parser0, c("-v", "--value"), type="integer",
+                         action="callback", callback=callback_fn)
+    opts <- parse_args(parser3, args = c("--value=2"))
+    expect_equal(opts$value, 4)
+
+    expect_warning(add_option(parser0, "--warning", callback=as.list), "callback argument is supplied for non-callback action")
+    expect_warning(add_option(parser0, "--warning", callback_args=list(3,b=4)), "callback_args argument is supplied for non-callback action")
+    expect_error(add_option(parser0, "--warning", action="callback", callback="hello"), "Option type cannot be inferred")
+    expect_warning(add_option(parser0, "--warning", action="callback", type="numeric", callback="hello"), "callback argument is not a function")
+})
+
 # Bug found by Miroslav Posta
 test_that("test using numeric instead of double", {
     option_list_neg <- list( make_option(c("-m", "--mean"), default=0, type="numeric") )
     parser <- OptionParser(usage = "\\%prog [options] file", option_list=option_list_neg)
-    parse_args(parser, args = c("-m", "-5.0")) 
+    opts <- parse_args(parser, args = c("-m", "-5.0")) 
+    expect_equal(opts$mean, -5.0)
 })
-
 
 # Bug found by Juan Carlos Borrás
 test_that("test bug of multiple '=' signs", {
@@ -250,6 +282,14 @@ test_that("Can set zero length default options", {
     expect_output(print_help(parser), "Default double")
 })
 
+# Bug found by Matthew Flickinger
+test_that("Can parse empty string", {
+    option_list <- list(make_option(c("", "--string")))
+    parser <- OptionParser(usage = "\\%prog [options] file", option_list=option_list)
+    expect_equal(sort_list(parse_args(parser, args = c("--string="))) ,
+                sort_list(list(string="", help=FALSE)))
+})
+
 # # Bug found by Rich FitzJohn 
 # oo <- options()
 # on.exit(options(oo))
@@ -268,7 +308,7 @@ context("Use h option for non-help")
 test_that("Use h option for non-help", {
     option_list_neg <- list( make_option(c("-h", "--mean"), default=0.0) )
     parser <- OptionParser(usage = "\\%prog [options] file", option_list=option_list_neg)
-    expect_that(parse_args(parser, args = c("-h", "-5.0")), throws_error()) 
+    expect_error(parse_args(parser, args = c("-h", "-5.0")), "redundant short names") 
 
     option_list_neg <- list( make_option(c("-h", "--mean"), default=0.0) )
     parser <- OptionParser(usage = "\\%prog [options] file", option_list=option_list_neg, add_help_option=FALSE)

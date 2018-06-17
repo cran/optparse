@@ -10,7 +10,7 @@ example.R</code></pre>
 <p>Here is what <code>example.R</code> contains:</p>
 <p><strong>bash$ display_file.R example.R</strong></p>
 <pre><code>#!/usr/bin/env Rscript
-# Copyright 2010-2013 Trevor L Davis &lt;trevor.l.davis@stanford.edu&gt;
+# Copyright 2010-2013 Trevor L Davis &lt;trevor.l.davis@gmail.com&gt;
 # Copyright 2008 Allen Day
 #  
 #  This file is free software: you may copy, redistribute and/or modify it  
@@ -94,40 +94,40 @@ Options:
 <p><strong>bash$ example.R</strong></p>
 <pre><code>writing some verbose output to standard error...
 
-1.49626496576745
--0.430133968033571
-0.412183647327778
--0.0446135231106203
-0.0332484143153748</code></pre>
+-0.286814049317704
+-0.83726024441288
+-0.162008087444489
+-2.70415146827921
+1.94964848776711</code></pre>
 <p>Or you can specify your own values.</p>
 <p><strong>bash$ example.R --mean=10 --sd=10 --count=3</strong></p>
 <pre><code>writing some verbose output to standard error...
 
-11.6458476431069
-5.72555072552593
-11.2994544799871</code></pre>
+16.990612109375
+1.06828694378206
+-9.66078576545811</code></pre>
 <p>If you remember from the example program that <code>--quiet</code> had <code>action=&quot;store_false&quot;</code> and <code>dest=&quot;verbose&quot;</code>. This means that <code>--quiet</code> is a switch that turns the <code>verbose</code> option from its default value of <code>TRUE</code> to <code>FALSE</code>. Note how the <code>verbose</code> and <code>quiet</code> options store their value in the exact same variable.</p>
 <p><strong>bash$ example.R --quiet -c 4 --generator=&quot;runif&quot;</strong></p>
-<pre><code>0.0652185005601496
-0.263430899009109
-0.397433762671426
-0.582770691253245</code></pre>
+<pre><code>0.833661639830098
+0.50316890119575
+0.88620581291616
+0.800722762709484</code></pre>
 <p>If you specify an illegal flag then <em>optparse</em> will throw an error.</p>
 <p><strong>bash$ example.R --silent -m 5</strong></p>
-<pre><code>Error in getopt(spec = spec, opt = args) : long flag &quot;silent&quot; is invalid
-Calls: parse_args -&gt; getopt
+<pre><code>Error in parse_args(OptionParser(option_list = option_list)) : 
+  Error in getopt(spec = spec, opt = args) : long flag &quot;silent&quot; is invalid
 Execution halted</code></pre>
 <p>If you specify the same option multiple times then <em>optparse</em> will use the value of the last option specified.</p>
 <p><strong>bash$ example.R -c 100 -c 2 -c 1000 -c 7</strong></p>
 <pre><code>writing some verbose output to standard error...
 
--0.0502636939925738
--1.20953394405362
-1.46327954003337
-1.43860488309639
-1.26968788684086
-1.51600057753648
--0.763034718503095</code></pre>
+1.58832133182675
+-0.791628255165861
+0.133930485412318
+0.39462223019152
+3.15597902034545
+0.0298463852780923
+0.473272926885721</code></pre>
 <p><em>optparse</em> can also recognize positional arguments if <code>parse_args</code> is given the option <code>positional_arguments = c(min_pa, max_pa)</code> where <code>min_pa</code> is the minimum and <code>max_pa</code> is the maximum number of supported positional arguments. (A single numeric corresponds to <code>min_pa == max_pa</code>, <code>TRUE</code> is equivalent to <code>c(0, Inf)</code>, and <code>FALSE</code>, the default, is equivalent to <code>0</code>.) Below we give an example program <em>display_file.R</em>, which is a program that prints out the contents of a single file (the required positional argument, not an optional argument) and which accepts the normal help option as well as an option to add line numbers to the output. Note that the positional arguments need to be placed <em>after</em> the optional arguments.</p>
 <p><strong>bash$ display_file.R --help</strong></p>
 <pre><code>Usage: display_file.R [options] file
@@ -141,7 +141,7 @@ Options:
         Show this help message and exit</code></pre>
 <p><strong>bash$ display_file.R --add_numbers display_file.R</strong></p>
 <pre><code>1 #!/usr/bin/env Rscript
-2 # Copyright 2010-2013 Trevor L Davis &lt;trevor.l.davis@stanford.edu&gt;
+2 # Copyright 2010-2013 Trevor L Davis &lt;trevor.l.davis@gmail.com&gt;
 3 # Copyright 2013 Kirill Müller 
 4 #  
 5 #  This file is free software: you may copy, redistribute and/or modify it  
