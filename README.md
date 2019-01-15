@@ -1,13 +1,13 @@
-optparse
-========
+optparse: Command line optional argument parser
+===============================================
 
 [![CRAN Status Badge](https://www.r-pkg.org/badges/version/optparse)](https://cran.r-project.org/package=optparse)
 
-[![Travis-CI Build Status](https://travis-ci.org/trevorld/optparse.png?branch=master)](https://travis-ci.org/trevorld/optparse)
+[![Travis-CI Build Status](https://travis-ci.org/trevorld/r-optparse.svg?branch=master)](https://travis-ci.org/trevorld/r-optparse)
 
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/trevorld/optparse?branch=master&svg=true)](https://ci.appveyor.com/project/trevorld/optparse)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/trevorld/r-optparse?branch=master&svg=true)](https://ci.appveyor.com/project/trevorld/r-optparse)
 
-[![Coverage Status](https://img.shields.io/codecov/c/github/trevorld/optparse/master.svg)](https://codecov.io/github/trevorld/optparse?branch=master)
+[![Coverage Status](https://img.shields.io/codecov/c/github/trevorld/r-optparse/master.svg)](https://codecov.io/github/trevorld/r-optparse?branch=master)
 
 [![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/optparse)](https://cran.r-project.org/package=optparse)
 
@@ -15,12 +15,16 @@ A pure R language command line parser inspired by Python\'s \'optparse\'
 library to be used with Rscript to write \"\#!\" shebang scripts that
 accept short and long flag/options.
 
-To install the development version use:
+To install the last version released on CRAN use the following command:
 
-    devtools::install_github("optparse", "trevorld")
+    > install.packages("optparse")
+
+To install the development version use the following command:
+
+    > remotes::install_github("trevorld/r-optparse")
 
 dependencies
-============
+------------
 
 This package depends on the R package `getopt`.
 
@@ -28,14 +32,14 @@ To run the unit tests you will need the suggested R package `testthat`
 and in order to build the vignette you will need the suggested R package
 `knitr` which in turn probably requires the system tool `pandoc`:
 
-    sudo apt-get install pandoc
+    $ sudo apt-get install pandoc
 
 examples
-========
+--------
 
 A simple example:
 
-    > suppressPackageStartupMessages(library("optparse"))
+    > library("optparse")
     > parser <- OptionParser()
     > parser <- add_option(parser, c("-v", "--verbose"), action="store_true", 
     >                 default=TRUE, help="Print extra output [default]")
@@ -60,7 +64,7 @@ explicitly set if writing an Rscript.
 
 One can also equivalently make options in a list:
 
-    > suppressPackageStartupMessages(library("optparse"))
+    > library("optparse")
     > option_list <- list( 
     >     make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
     >         help="Print extra output [default]"),
@@ -100,6 +104,16 @@ One can also equivalently make options in a list:
 
         -c NUMBER, --count=NUMBER
             Number of random normals to generate [default 5]
+
+
+    Error in parse_args(parser, args = c("--help")) : help requested
+
+Note by default when `optparse::parse_args` sees a `--help` flag it will
+first print out a usage message and then either throw an error in
+interactive use or call `quit` in non-interactive use (i.e. when used
+within an Rscript called by a shell). To disable the error/quit set the
+argument `print_help_and_exit` to `FALSE` in `parse_args` and to simply
+print out the usage string one can also use the function `print_usage`.
 
 `optparse` has limited positional argument support, other command-line
 parsers for R such as `argparse` have richer positional argument

@@ -2,7 +2,7 @@ Encoding: UTF-8
 Package: optparse
 Type: Package
 Title: Command Line Option Parser
-Version: 1.6.0
+Version: 1.6.1
 Authors@R: c(person("Trevor L", "Davis", role = c("aut", "cre"), email="trevor.l.davis@gmail.com"),
     person("Allen", "Day", role="ctb", comment="Some documentation and examples ported from the getopt package."),
     person("Python Software Foundation", role="ctb", comment="Some documentation from the optparse Python module."),
@@ -17,16 +17,16 @@ Description: A command line parser inspired by Python's 'optparse' library to
     long flag/options.
 License: GPL (>= 2)
 Copyright: See file (inst/)COPYRIGHTS.
-URL: https://github.com/trevorld/optparse
-BugReports: https://github.com/trevorld/optparse/issues
+URL: https://github.com/trevorld/r-optparse
+BugReports: https://github.com/trevorld/r-optparse/issues
 LazyLoad: yes
 Depends: R (>= 2.9.0)
 Imports: methods, getopt (>= 1.20.2)
-Suggests: knitr (>= 1.15.19), stringr, testthat
+Suggests: covr, knitr (>= 1.15.19), stringr, testthat
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2018-06-17 18:34:12 UTC; trevorld
+Packaged: 2019-01-15 18:52:17 UTC; trevorld
 Author: Trevor L Davis [aut, cre],
   Allen Day [ctb] (Some documentation and examples ported from the getopt
     package.),
@@ -40,4 +40,4 @@ Author: Trevor L Davis [aut, cre],
   Gyu Jin Choi [ctb]
 Maintainer: Trevor L Davis <trevor.l.davis@gmail.com>
 Repository: CRAN
-Date/Publication: 2018-06-17 19:07:56 UTC
+Date/Publication: 2019-01-15 21:20:03 UTC
