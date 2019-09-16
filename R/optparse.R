@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2017 Trevor L. Davis <trevor.l.davis@gmail.com>  
+# Copyright (c) 2010-2019 Trevor L. Davis <trevor.l.davis@gmail.com>  
 # Copyright (c) 2015 Rick FitzJohn https://github.com/richfitz
 # Copyright (c) 2013 Kirill Müller https://github.com/krlmlr
 # Copyright (c) 2011 Jim Nikelski <nikelski@bic.mni.mcgill.ca>
@@ -227,11 +227,18 @@ OptionParser <- function(usage = "usage: %prog [options]", option_list=list(),
 #'        help="Standard deviation if generator == \"rnorm\" [default %default]")
 #'
 #' @export
-make_option <- function(opt_str, action="store", type=NULL, dest=NULL, default=NULL, help="", metavar=NULL, callback=NULL, callback_args=NULL) {
+make_option <- function(opt_str, action="store", type=NULL, dest=NULL, default=NULL, 
+                        help="", metavar=NULL, callback=NULL, callback_args=NULL) {
 
     # flags
     short_flag <- opt_str[grepl("^-[[:alpha:]]", opt_str)]
-    if(length(short_flag)) {} else { short_flag <- as.character(NA) }
+    if(length(short_flag) == 0) {
+        short_flag <- NA_character_ 
+    } else {
+        if (nchar(short_flag) > 2) {
+            stop(paste("Short flag", short_flag, "must only be a '-' and a single letter"))
+        }
+    }
     long_flag <- opt_str[grepl("^--[[:alpha:]]", opt_str)]
     if(length(long_flag)) {} else {stop("We require a long flag option")}
 
@@ -259,7 +266,7 @@ make_option <- function(opt_str, action="store", type=NULL, dest=NULL, default=N
     if(is.null(dest)) { dest <- sub("^--", "", long_flag) }
     # metavar
     if(is.null(metavar)) {
-        if(action == "store") { 
+        if(.option_needs_argument_helper(action, type)) { 
             metavar <- sub("^--", "", long_flag)
         } else {
             metavar <- character(0)
@@ -324,14 +331,14 @@ print_help <- function(object) {
         cat("\t")
         if(!is.na(option@short_flag)) {
             cat(option@short_flag)
-            if( option@action == "store" ) {
+            if (.option_needs_argument(option)) {
                 cat(" ", toupper(option@metavar), sep="")
             }
             cat(", ")
         }
         if(!is.null(option@long_flag)) {
             cat(option@long_flag)
-            if( option@action == "store" ) {
+            if(.option_needs_argument(option)) {
                 cat("=", toupper(option@metavar), sep="")
             }
         }
@@ -649,10 +656,13 @@ parse_args2 <- function(object, args = commandArgs(trailingOnly = TRUE),
 }
 
 .option_needs_argument <- function(option) {
-    if (option@action == "store") {
+    .option_needs_argument_helper(option@action, option@type)
+}
+.option_needs_argument_helper <- function(action, type) {
+    if (action == "store") {
         TRUE
-    } else if (option@action == "callback") {
-        if (is.null(option@type)) {
+    } else if (action == "callback") {
+        if (is.null(type)) {
             FALSE
         } else {
             TRUE
