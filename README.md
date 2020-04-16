@@ -104,24 +104,24 @@ parse_args(OptionParser(option_list=option_list), args = c("--verbose", "--count
 parse_args(parser, args = c("--help"))
 ```
 
-    ## Usage: %prog [options]
-    ## 
-    ## 
-    ## Options:
-    ##  -h, --help
-    ##      Show this help message and exit
-    ## 
-    ##  -v, --verbose
-    ##      Print extra output [default]
-    ## 
-    ##  -q, --quietly
-    ##      Print little output
-    ## 
-    ##  -c NUMBER, --count=NUMBER
-    ##      Number of random normals to generate [default 5]
-    ##
-    ##
-    ## Error in parse_args(parser, args = c("--help")) : help requested
+    Usage: %prog [options]
+
+
+    Options:
+        -h, --help
+            Show this help message and exit
+
+        -v, --verbose
+            Print extra output [default]
+
+        -q, --quietly
+            Print little output
+
+        -c NUMBER, --count=NUMBER
+            Number of random normals to generate [default 5]
+
+
+    Error in parse_args(parser, args = c("--help")) : help requested
 
 Note by default when `optparse::parse_args` sees a `--help` flag it will
 first print out a usage message and then either throw an error in
