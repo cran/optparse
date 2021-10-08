@@ -27,7 +27,7 @@ by either a trailing =, or may be the subsequent option. 5. A short flag is a
 type of flag, and begins with the string \dQuote{-}. If a short flag has an
 associated argument, it is the subsequent option. short flags may be bundled
 together, sharing a single leading \dQuote{"-"}, but only the final short
-flag is able to have a corresponding argument. %%%
+flag is able to have a corresponding argument. \%\%\%
 }
 \examples{
 
@@ -41,7 +41,7 @@ flag is able to have a corresponding argument. %%%
 }
 \references{
 Python's \code{optparse} library, which this package is based on,
-is described here: \url{http://docs.python.org/library/optparse.html}
+is described here: \url{https://docs.python.org/3/library/optparse.html}
 }
 \seealso{
 \code{\link[getopt]{getopt}}

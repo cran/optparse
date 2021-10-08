@@ -1,35 +1,29 @@
-optparse: Command line optional argument parser
-===============================================
+# optparse: Command line optional argument parser
 
 [![CRAN Status Badge](https://www.r-pkg.org/badges/version/optparse)](https://cran.r-project.org/package=optparse)
 
-[![Travis-CI Build Status](https://travis-ci.org/trevorld/r-optparse.svg?branch=master)](https://travis-ci.org/trevorld/r-optparse)
-
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/trevorld/r-optparse?branch=master&svg=true)](https://ci.appveyor.com/project/trevorld/r-optparse)
+[![R-CMD-check](https://github.com/trevorld/r-optparse/workflows/R-CMD-check/badge.svg)](https://github.com/trevorld/r-optparse/actions)
 
 [![Coverage Status](https://img.shields.io/codecov/c/github/trevorld/r-optparse/master.svg)](https://codecov.io/github/trevorld/r-optparse?branch=master)
 
 [![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/optparse)](https://cran.r-project.org/package=optparse)
 
-A pure R language command line parser inspired by Python\'s \'optparse\'
-library to be used with Rscript to write \"\#!\" shebang scripts that
+<img src="man/figures/logo.png" align="right" width="200px" alt="optparse hex sticker">
+
+A pure R language command line parser inspired by Python's 'optparse'
+library to be used with Rscript to write "\#!" shebang scripts that
 accept short and long flag/options.
 
 To install the last version released on CRAN use the following command:
 
-``` {.r}
-install.packages("optparse")
-```
+    install.packages("optparse")
 
 To install the development version use the following command:
 
-``` {.r}
-install.packages("remotes")
-remotes::install_github("trevorld/r-optparse")
-```
+    install.packages("remotes")
+    remotes::install_github("trevorld/r-optparse")
 
-dependencies
-------------
+## dependencies
 
 This package depends on the R package `getopt`.
 
@@ -37,27 +31,22 @@ To run the unit tests you will need the suggested R package `testthat`
 and in order to build the vignette you will need the suggested R package
 `knitr` which in turn probably requires the system tool `pandoc`:
 
-``` {.bash}
-sudo apt install pandoc
-```
+    sudo apt install pandoc
 
-examples
---------
+## examples
 
 A simple example:
 
-``` {.r}
-library("optparse")
-parser <- OptionParser()
-parser <- add_option(parser, c("-v", "--verbose"), action="store_true", 
-                default=TRUE, help="Print extra output [default]")
-parser <- add_option(parser, c("-q", "--quietly"), action="store_false", 
-                    dest="verbose", help="Print little output")
-parser <- add_option(parser, c("-c", "--count"), type="integer", default=5, 
-                help="Number of random normals to generate [default %default]",
-                metavar="number")
-parse_args(parser, args = c("--quietly", "--count=15"))
-```
+    library("optparse")
+    parser <- OptionParser()
+    parser <- add_option(parser, c("-v", "--verbose"), action="store_true", 
+                    default=TRUE, help="Print extra output [default]")
+    parser <- add_option(parser, c("-q", "--quietly"), action="store_false", 
+                        dest="verbose", help="Print little output")
+    parser <- add_option(parser, c("-c", "--count"), type="integer", default=5, 
+                    help="Number of random normals to generate [default %default]",
+                    metavar="number")
+    parse_args(parser, args = c("--quietly", "--count=15"))
 
     ## $help
     ## [1] FALSE
@@ -69,25 +58,23 @@ parse_args(parser, args = c("--quietly", "--count=15"))
     ## [1] 15
 
 Note that the `args` argument of `parse_args` default is
-`commandArgs(trailing=TRUE)` so it typically doesn\'t need to be
+`commandArgs(trailing=TRUE)` so it typically doesn't need to be
 explicitly set if writing an Rscript.
 
 One can also equivalently make options in a list:
 
-``` {.r}
-library("optparse")
-option_list <- list( 
-    make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
-        help="Print extra output [default]"),
-    make_option(c("-q", "--quietly"), action="store_false", 
-        dest="verbose", help="Print little output"),
-    make_option(c("-c", "--count"), type="integer", default=5, 
-        help="Number of random normals to generate [default %default]",
-        metavar="number")
-    )
+    library("optparse")
+    option_list <- list( 
+        make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
+            help="Print extra output [default]"),
+        make_option(c("-q", "--quietly"), action="store_false", 
+            dest="verbose", help="Print little output"),
+        make_option(c("-c", "--count"), type="integer", default=5, 
+            help="Number of random normals to generate [default %default]",
+            metavar="number")
+        )
 
-parse_args(OptionParser(option_list=option_list), args = c("--verbose", "--count=11"))
-```
+    parse_args(OptionParser(option_list=option_list), args = c("--verbose", "--count=11"))
 
     ## $verbose
     ## [1] TRUE
@@ -100,9 +87,7 @@ parse_args(OptionParser(option_list=option_list), args = c("--verbose", "--count
 
 `optparse` automatically creates a help option:
 
-``` {.r}
-parse_args(parser, args = c("--help"))
-```
+    parse_args(parser, args = c("--help"))
 
     Usage: %prog [options]
 
@@ -134,9 +119,7 @@ print out the usage string one can also use the function `print_usage`.
 parsers for R such as `argparse` have richer positional argument
 support:
 
-``` {.r}
-parse_args(parser, args = c("-v", "-c25", "75", "22"), positional_arguments = TRUE)
-```
+    parse_args(parser, args = c("-vc", "25", "75", "22"), positional_arguments = TRUE)
 
     ## $options
     ## $options$help
@@ -146,18 +129,16 @@ parse_args(parser, args = c("-v", "-c25", "75", "22"), positional_arguments = TR
     ## [1] TRUE
     ## 
     ## $options$count
-    ## [1] 5
+    ## [1] 25
     ## 
     ## 
     ## $args
-    ## [1] "-c25" "75"   "22"
+    ## [1] "75" "22"
 
 The function `parse_args2` wraps `parse_args` while setting
 `positional_arguments=TRUE` and `convert_hyphens_to_underscores=TRUE`:
 
-``` {.r}
-parse_args2(parser, args = c("-v", "-c25", "75", "22"))
-```
+    parse_args2(parser, args = c("-vc", "25", "75", "22"))
 
     ## $options
     ## $options$help
@@ -167,8 +148,8 @@ parse_args2(parser, args = c("-v", "-c25", "75", "22"))
     ## [1] TRUE
     ## 
     ## $options$count
-    ## [1] 5
+    ## [1] 25
     ## 
     ## 
     ## $args
-    ## [1] "-c25" "75"   "22"
+    ## [1] "75" "22"
