@@ -4,7 +4,7 @@
 
 [![R-CMD-check](https://github.com/trevorld/r-optparse/workflows/R-CMD-check/badge.svg)](https://github.com/trevorld/r-optparse/actions)
 
-[![Coverage Status](https://img.shields.io/codecov/c/github/trevorld/r-optparse/master.svg)](https://codecov.io/github/trevorld/r-optparse?branch=master)
+[![Coverage Status](https://codecov.io/github/trevorld/r-optparse/branch/master/graph/badge.svg)](https://app.codecov.io/github/trevorld/r-optparse?branch=master)
 
 [![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/optparse)](https://cran.r-project.org/package=optparse)
 
