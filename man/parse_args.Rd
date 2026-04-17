@@ -25,11 +25,11 @@ parse_args2(
 
 \item{args}{A character vector containing command line options to be parsed.
 Default is everything after the Rscript program in the command line. If
-\code{positional_arguments} is not \code{FALSE} then \code{parse_args} will
+\code{positional_arguments} is not \code{FALSE} then \code{\link[=parse_args]{parse_args()}} will
 look for positional arguments at the end of this vector.}
 
-\item{print_help_and_exit}{Whether \code{parse_args} should call
-\code{print_help} to print out a usage message and exit the program.  Default
+\item{print_help_and_exit}{Whether \code{\link[=parse_args]{parse_args()}} should call
+\code{\link[=print_help]{print_help()}} to print out a usage message and exit the program.  Default
 is \code{TRUE}.}
 
 \item{positional_arguments}{Number of \emph{positional} arguments.  A numeric
@@ -52,20 +52,28 @@ positional arguments.  For backward compatibility, if and only if
 option values.
 }
 \description{
-\code{parse_args} parses command line options using an \code{OptionParser}
-instance for guidance. \code{parse_args2} is a wrapper to \code{parse_args}
+\code{\link[=parse_args]{parse_args()}} parses command line options using an \code{OptionParser}
+instance for guidance. \code{\link[=parse_args2]{parse_args2()}} is a wrapper to \code{\link[=parse_args]{parse_args()}}
 setting the options \code{positional_arguments} and \code{convert_hyphens_to_underscores}
 to \code{TRUE}.
 }
-\section{Acknowledgement}{
+\section{Errors}{
 
-A big thanks to Steve Lianoglou for a bug report and patch;
-Juan Carlos \enc{Borrás}{Borras} for a bug report;
-Jim Nikelski for a bug report and patch;
-Ino de Brujin and Benjamin Tyner for a bug report;
-Jonas Zimmermann for bug report; Miroslav Posta for bug reports;
-Stefan Seemayer for bug report and patch;
-Kirill \enc{Müller}{Muller} for patches; Steve Humburg for patch.
+The following classed errors may be thrown:
+\itemize{
+\item \code{optparse_parse_error}: base class for all parse-time errors.
+\itemize{
+\item \code{optparse_bad_option_error}: unrecognized, misused, or
+argument-requiring option.
+\itemize{
+\item \code{optparse_ambiguous_option_error}: ambiguous abbreviated long
+flag.
+}
+\item \code{optparse_bad_positional_arguments_error}: wrong number of
+positional arguments supplied.
+\item \code{optparse_missing_required_error}: a required option was not supplied.
+}
+}
 }
 
 \examples{
@@ -107,8 +115,5 @@ Python's \code{optparse} library, which inspired this package,
 is described here: \url{https://docs.python.org/3/library/optparse.html}
 }
 \seealso{
-\code{\link{OptionParser}} \code{\link{print_help}}
-}
-\author{
-Trevor Davis.
+\code{\link[=OptionParser]{OptionParser()}} \code{\link[=print_help]{print_help()}}
 }

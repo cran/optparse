@@ -1,3 +1,42 @@
+optparse 1.8.2
+==============
+
+New features
+------------
+
+* `add_option()` (and `make_option()`) now support the following new actions (#22):
+
+  + `action = "append"` which appends each occurrence's value to `default`.
+  + `action = "append_const"` which appends `const` to `default` each time the flag is seen.
+  + `action = "count"`, which counts the number of times a flag is seen and adds it to `default` (treated as `0L` if not supplied). Returns `NULL` if the flag is never seen and no `default` was supplied.
+  + `action = "store_const"` which stores `const` when the flag is seen.
+
+* `add_option()` (and `make_option()`) now support a `const` parameter (intended for new actions `"append_const"` and `"store_const"`).
+
+* Several new classed errors are now thrown, mirroring Python's `optparse` exception hierarchy:
+
+  + `optparse_option_error`: invalid option definition in `make_option()` or `add_option()`.
+    - `optparse_option_conflict_error`: duplicate flag in `OptionParser()` or `add_option()`.
+
+  + `optparse_parse_error`: existing base class for all parse-time errors from `parse_args()`.
+    - `optparse_bad_option_error`: unrecognized, misused, or argument-requiring option.
+      * `optparse_ambiguous_option_error`: ambiguous abbreviated long flag.
+    - `optparse_bad_positional_arguments_error`: wrong number of positional arguments supplied.
+    - `optparse_missing_required_error`: a required option was not supplied.
+
+* `add_option()` (and `make_option()`) now allow non-letter characters in short flags (e.g., `-1`) and at the beginning of long flags (e.g., `--1flag`), following Python's `optparse` convention. However long and short flags may not contain `=` or whitespace (or begin with hyphens).
+
+* `add_option()` (and `make_option()`) now support a `required` argument.
+  If `TRUE`, `parse_args()` will throw an error if the option is not provided on the command line (#17).
+
+Bug fixes and minor improvements
+--------------------------------
+
+* `parse_args()` (and `parse_args2()`) now correctly handle a bare `--` separator: all arguments after `--` are treated as positional arguments rather than options.
+* `parse_args()` (and `parse_args2()`) now support abbreviated long flags (e.g. `--verb` matching `--verbose`) when `positional_arguments` is not `FALSE`. Previously abbreviations were only supported when `positional_arguments = FALSE`.
+* `make_option()` now throws a classed `optparse_option_error` for invalid `action` or `type` arguments instead of a confusing error later at parse time.
+* `OptionParser()` now also checks the `LITTLER_SCRIPT_PATH` environment variable for the script name when performing `%prog` on the `usage` argument so it works when called from `littler`.
+
 optparse 1.7.5
 ==============
 
@@ -15,7 +54,7 @@ optparse 1.7.3
 
 * The errors raised by `parse_args()` (and `parse_args2()`) are now of class "optparse\_parse\_error".
 
-  When `interactive()` is `FALSE` we now print out a usage string followed by 
+  When `interactive()` is `FALSE` we now print out a usage string followed by
   a (less verbose) error message.
 
 * Throws a more informative error message for unknown short flags when ``positional_arguments=TRUE``.
@@ -75,7 +114,7 @@ optparse 1.4.4
 
 * Minor documentation fixes.  Thanks J. J. Ramsey and Daeyoung Kim for bug reports.
 * Fix bug when ``add_help_option`` in ``OptionParser`` set to ``FALSE``.  Thanks to Jeff Bruce for bug report.
-* ``parse_args`` now supports ``convert_hyphens_to_underscores`` argument which converts any hyphens to underscores 
+* ``parse_args`` now supports ``convert_hyphens_to_underscores`` argument which converts any hyphens to underscores
   when returning the list of options
 * Now includes the convenience function ``parse_args2`` which wraps ``parse_args`` with ``positional_arguments`` set to ``TRUE``
   and ``convert_hyphens_to_underscores`` set to ``TRUE``.
@@ -98,14 +137,14 @@ optparse 1.2.0
   or two numeric values that denote the minimum and maximum number of supported
   positional arguments.
   Thanks Kirill Müller for patch.
-* If ``interactive() == TRUE`` then ``parse_args`` will no longer ``quit(status=1)`` 
+* If ``interactive() == TRUE`` then ``parse_args`` will no longer ``quit(status=1)``
   after printing a help message but will instead throw an error.
   ``optparse`` will continue to ``quit(status=1)`` after printing a help message
   for non-interactive Rscripts unless ``print_help_and_exit == FALSE``.
 * In ``make_option`` argument ``type="numeric"`` automatically cast to ``double``.
   Previously users might have received an error passing negative numbers if they
   accidentally specified "numeric" instead of "double".
-* Bug fixed in printing usage message for options with default value of NA 
+* Bug fixed in printing usage message for options with default value of NA
   and a help string including "%default".
   Thanks Stefan Seemayer for bug report and patch.
 
@@ -123,9 +162,9 @@ optparse 1.0.0
 
 * Added `description` and `epilogue` arguments to `OptionParser` to allow
   users to add more information to generated help messages
-* Slightly alters the generated usage string 
+* Slightly alters the generated usage string
   to match more closely what the Python module does
 * No longer exports S4 classes that represent OptionParser and OptionParserOption
-* Now requires package getopt (>= 1.19) which has also been moved to 
+* Now requires package getopt (>= 1.19) which has also been moved to
   Imports field from Depends field in DESCRIPTION
 * Now also Suggests stringr package in DESCRIPTION
